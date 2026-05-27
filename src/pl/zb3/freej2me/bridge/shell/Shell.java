@@ -53,4 +53,9 @@ public class Shell {
     public static native void sthop();
     public static native void say(String sth);
     public static native void sayObject(String label, Object handle);
+
+    public static native Object netSocketOpen(String url);
+    public static native int netSocketRead(Object handle, byte[] buffer, int offset, int length);
+    public static native void netSocketWrite(Object handle, byte[] buffer, int offset, int length);
+    public static native void netSocketClose(Object handle);
 }

@@ -102,17 +102,51 @@ function createSerializedWrapper(methodsObject) {
 
 const ctx = document.createElement('canvas').getContext('2d');
 ctx.canvas.width = 10; ctx.canvas.height = 10;
+ctx.imageSmoothingEnabled = false;
 //document.body.appendChild(ctx.canvas);
 
 async function transformBitmapOrCanvas(src, sx, sy, sw, sh, a90, mirror) {
+  const srcW = src && typeof src.width === 'number' ? src.width : 0;
+  const srcH = src && typeof src.height === 'number' ? src.height : 0;
+
+  if (!src || srcW <= 0 || srcH <= 0 || sw <= 0 || sh <= 0) {
+    ctx.canvas.width = 1;
+    ctx.canvas.height = 1;
+    ctx.clearRect(0, 0, 1, 1);
+    return await createImageBitmap(ctx.canvas);
+  }
+
+  let x = sx | 0;
+  let y = sy | 0;
+  let w = sw | 0;
+  let h = sh | 0;
+
+  if (x < 0) {
+    w += x;
+    x = 0;
+  }
+  if (y < 0) {
+    h += y;
+    y = 0;
+  }
+  if (x + w > srcW) w = srcW - x;
+  if (y + h > srcH) h = srcH - y;
+
+  if (w <= 0 || h <= 0) {
+    ctx.canvas.width = 1;
+    ctx.canvas.height = 1;
+    ctx.clearRect(0, 0, 1, 1);
+    return await createImageBitmap(ctx.canvas);
+  }
+
   if (a90 == 0 && !mirror) {
-    return await createImageBitmap(src, sx, sy, sw, sh);
+    return await createImageBitmap(src, x, y, w, h);
   }
 
   const swap = a90 & 1;
 
-  ctx.canvas.width = swap ? sh : sw;
-  ctx.canvas.height = swap ? sw : sh;
+  ctx.canvas.width = swap ? h : w;
+  ctx.canvas.height = swap ? w : h;
 
   ctx.save();
   if (a90 || mirror) {
@@ -127,7 +161,7 @@ async function transformBitmapOrCanvas(src, sx, sy, sw, sh, a90, mirror) {
       ctx.translate(-ctx.canvas.width/2, -ctx.canvas.height/2);
     }
   }
-  ctx.drawImage(src, sx, sy, sw, sh, 0, 0, sw, sh);
+  ctx.drawImage(src, x, y, w, h, 0, 0, w, h);
   ctx.restore();
 
   return await createImageBitmap(ctx.canvas);
@@ -260,8 +294,9 @@ const CanvasGraphics = ({
   },
 
   async Java_pl_zb3_freej2me_bridge_graphics_CanvasGraphics_bitmapToCanvasCtx(lib, bmp) {
-    const newCtx = document.createElement('canvas').getContext('2d');
+    const newCtx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
     newCtx.canvas.width = bmp.width; newCtx.canvas.height = bmp.height;
+    newCtx.imageSmoothingEnabled = false;
 
     newCtx.drawImage(bmp, 0, 0);
 
@@ -282,6 +317,7 @@ const CanvasGraphics = ({
 
 
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
 
     // we measure with this baseline
     ctx.textBaseline = 'alphabetic';
@@ -459,6 +495,10 @@ const CanvasGraphics = ({
     if (buffer) {
       return new Int8Array(buffer);
     }
+  },
+
+  async Java_pl_zb3_freej2me_bridge_graphics_CanvasGraphics_flushPlatformToScreen(lib, lcdCtx, screenCtx, platformImg, x, y, w, h) {
+    screenCtx.drawImage(platformImg, 0, 0);
   }
 
 });

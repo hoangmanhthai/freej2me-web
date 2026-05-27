@@ -431,6 +431,12 @@ public class CanvasGraphics extends javax.microedition.lcdui.Graphics {
 
     private static native byte[] getRGBAFromCtx(Object handle, int sx, int sy, int width, int height);
 
+    static native void flushPlatformToScreen(Object lcdCtx, Object screenCtx, Object platformImg, int x, int y, int w, int h);
+
+    public static void flushFromPlatform(CanvasGraphics lcdGc, CanvasGraphics screenGc, CanvasImage platformImage, int x, int y, int w, int h) {
+        flushPlatformToScreen(lcdGc.ctxHandle, screenGc.ctxHandle, platformImage.getBitmapOrCanvas(), x, y, w, h);
+    }
+
     private static native Object bitmapToCanvasCtx(Object handle);
 
     private static native Object createCanvasCtx(int width, int height);

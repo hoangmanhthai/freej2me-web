@@ -82,11 +82,6 @@ public class RecordStore
 		file = new File(rmsFile);
 		if(!file.exists())
 		{
-			if(!createIfNecessary)
-			{
-				throw (new RecordStoreNotFoundException("Record Store Doesn't Exist: " + rmsFile));
-			}
-
 			try // Check Record Store File
 			{
 				//System.out.println("> Creating New Record Store "+appname+"/"+recordStoreName);
@@ -290,7 +285,9 @@ public class RecordStore
 		//System.out.println("> getRecord("+recordId+")");
 		if(recordId >= records.size())
 		{
-			//System.out.println("getRecord Invalid RecordId "+recordId);
+if (recordId == 1) {
+				return null;
+			}
 			throw(new InvalidRecordIDException("(A) Invalid Record ID: "+recordId));
 		}
 		try
@@ -298,6 +295,9 @@ public class RecordStore
 			byte[] t = records.get(recordId);
 			if(t.length==0) { return null; }
 			return t;
+		}
+		catch (InvalidRecordIDException e) {
+			throw e;
 		}
 		catch (Exception e)
 		{

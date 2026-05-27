@@ -1,0 +1,221 @@
+:8000/favicon.ico:1  Failed to load resource: the server responded with a status of 404 (Not Found)
+worklet.js:70 msg aa sample 48000
+
+cj3.js:1 CheerpJ runtime ready
+main.js:443 [net] using socketProxy ws://127.0.0.1:8000/
+cheerpOS.js:2086 has set screenctx
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 after starteventqueue
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 Create MIDlet
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 AGENT: 0, PROVIDER: 0
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 java.lang.NullPointerException
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at java.io.ByteArrayInputStream.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Code.Method438(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Code.<clinit>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameMidled.Method1147(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameMidled.<clinit>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at mResources.Method150(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameCanvas.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameCanvas.Method1054(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameMidlet.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at java.lang.reflect.Constructor.newInstance(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at org.recompile.mobile.MIDletLoader.start(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at org.recompile.mobile.MobilePlatform.runJar(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at org.recompile.freej2me.FreeJ2ME.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at org.recompile.freej2me.FreeJ2ME.main(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at com.leaningtech.cheerpj.CheerpJLibrary.run(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 java.lang.NullPointerException
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at java.io.ByteArrayInputStream.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at SettingDanhvong.Method306(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Code.Method438(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Code.<clinit>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameMidled.Method1147(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameMidled.<clinit>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at mResources.Method150(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameCanvas.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameCanvas.Method1054(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameMidlet.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at java.lang.reflect.Constructor.newInstance(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at org.recompile.mobile.MIDletLoader.start(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at org.recompile.mobile.MobilePlatform.runJar(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at org.recompile.freej2me.FreeJ2ME.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at org.recompile.freej2me.FreeJ2ME.main(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at com.leaningtech.cheerpj.CheerpJLibrary.run(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 Load Auto
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 java.lang.NullPointerException
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at java.io.ByteArrayInputStream.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Char.Method53(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Char.<clinit>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameScr.Method636(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at LoginScr.<init>(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameCanvas.Method9(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Class132.Method8(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at GameCanvas.Method7(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at MotherCanvas.run(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at java.lang.Thread.run(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 connect to socket://nj7.teamobi.com:14444 : 0
+cheerpOS.js:2086 
+
+main.js:318 [net] open ws://127.0.0.1:8000/?host=nj7.teamobi.com&port=14444
+cheerpOS.js:2086 Socket proxy open ws://127.0.0.1:8000/?host=nj7.teamobi.com&port=14444
+cheerpOS.js:2086 
+
+main.js:413 [net] rx 0 tx 3
+cheerpOS.js:2086 Connect ok
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 ****** DATA VERSION: Server 71 Client 0
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 ****** MAP VERSION: Server 6 Client 0
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 ****** SKILL VERSION: Server 10 Client 0
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 ****** ITEM VERSION: Server 30 Client 0
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 GET UPDATE_DATA 80555 bytes
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 GET UPDATE_MAP 16083 bytes
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 GET UPDATE_SKILL 41076 bytes
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 GET UPDATE_ITEM 81579 bytes
+cheerpOS.js:2086 
+
+main.js:351 [net] rx 94 tx 239
+main.js:351 [net] rx 10 tx 287
+cheerpOS.js:2086 java.io.EOFException
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at java.io.DataInputStream.readUnsignedByte(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Controller.Method410(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Controller.onMessage(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at Class25.run(Unknown Source)
+cheerpOS.js:2086 
+
+cheerpOS.js:2086 	at java.lang.Thread.run(Unknown Source)
+cheerpOS.js:2086 
+
+main.js:351 [net] rx 51 tx 374
+main.js:351 [net] rx 51 tx 374

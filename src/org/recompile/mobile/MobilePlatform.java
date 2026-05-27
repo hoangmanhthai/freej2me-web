@@ -16,6 +16,11 @@
 */
 package org.recompile.mobile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.SecureRandom;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -29,8 +34,11 @@ import javax.microedition.lcdui.game.GameCanvas;
 import pl.zb3.freej2me.bridge.graphics.CanvasGraphics;
 import pl.zb3.freej2me.bridge.graphics.CanvasImage;
 import pl.zb3.freej2me.bridge.shell.KeyEvent;
+import pl.zb3.freej2me.bridge.shell.Shell;
 
 import javax.microedition.lcdui.Image;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 
 /*
@@ -58,6 +66,13 @@ public class MobilePlatform
 
 	public volatile int keyState = 0;
 
+	private long lastPaintMs = 0;
+	private volatile CanvasImage lastPlatformImage;
+
+	public CanvasImage getPlatformImage() {
+		return lastPlatformImage;
+	}
+
 	public MobilePlatform(String dataPath, int width, int height)
 	{
 		this.dataPath = dataPath;
@@ -78,7 +93,65 @@ public class MobilePlatform
 		addSystemProperty("microedition.encoding", "ISO-8859-1");
 		addSystemProperty("microedition.m3g.version", "1.1");
 		addSystemProperty("wireless.messaging.sms.smsc", "+8613800010000");
-		addSystemProperty("device.imei", "000000000000000");
+		String imei = loadOrCreateImei(this.dataPath);
+		addSystemProperty("device.imei", imei);
+		addSystemProperty("com.nokia.mid.imei", imei);
+		addSystemProperty("com.nokia.mid.imsi", "000000000000000");
+		addSystemProperty("com.sonyericsson.imei", "IMEI " + imei + "-0-00");
+		addSystemProperty("com.siemens.IMEI", imei);
+		addSystemProperty("phone.imei", imei);
+		addSystemProperty("IMEI", imei);
+	}
+
+	private static String loadOrCreateImei(String dataPath) {
+		try {
+			Path baseDir = Paths.get(dataPath);
+			Files.createDirectories(baseDir);
+			Path imeiFile = baseDir.resolve("imei.txt");
+			if (Files.exists(imeiFile)) {
+				List<String> lines = Files.readAllLines(imeiFile);
+				if (!lines.isEmpty()) {
+					String imei = lines.get(0).trim();
+					if (imei.matches("\\d{15}")) {
+						return imei;
+					}
+				}
+			}
+
+			String generated = generateImei();
+			Files.write(imeiFile, (generated + "\n").getBytes("UTF-8"));
+			return generated;
+		} catch (Throwable e) {
+			return "358240051111110";
+		}
+	}
+
+	private static String generateImei() {
+		SecureRandom rng = new SecureRandom();
+		StringBuilder sb = new StringBuilder(15);
+		sb.append("35");
+		while (sb.length() < 14) {
+			sb.append((char) ('0' + rng.nextInt(10)));
+		}
+		char check = luhnCheckDigit(sb.toString());
+		sb.append(check);
+		return sb.toString();
+	}
+
+	private static char luhnCheckDigit(String digits14) {
+		int sum = 0;
+		for (int i = 0; i < digits14.length(); i++) {
+			int d = digits14.charAt(digits14.length() - 1 - i) - '0';
+			if ((i % 2) == 0) {
+				d *= 2;
+				if (d > 9) {
+					d -= 9;
+				}
+			}
+			sum += d;
+		}
+		int check = (10 - (sum % 10)) % 10;
+		return (char) ('0' + check);
 	}
 
 	public void startEventQueue() {
@@ -107,6 +180,7 @@ public class MobilePlatform
 	public void setPainter(Runnable r)
 	{
 		painter = r;
+		lastPaintMs = 0;
 	}
 
 	public void keyPressed(KeyEvent e)
@@ -270,13 +344,25 @@ public class MobilePlatform
 		{
 			System.out.println("Error Running Jar");
 			e.printStackTrace();
+			try {
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				pw.flush();
+				Shell.say(sw.toString());
+			} catch (Throwable ignored) {
+			}
 
-			// todo: paint proper BSOD
 			gc.setColor(0x000080);
 			gc.fillRect(0,0, lcdWidth, lcdHeight);
 
 			gc.setColor(0xFFFFFF);
-			gc.drawString("Game crashed :(", lcdWidth/2, lcdHeight/2, Graphics.HCENTER | Graphics.VCENTER);
+			String msg = e.getClass().getName();
+			if (e.getMessage() != null && !e.getMessage().isEmpty()) {
+				msg = msg + ": " + e.getMessage();
+			}
+			gc.drawString("Game crashed", lcdWidth/2, lcdHeight/2 - 10, Graphics.HCENTER | Graphics.VCENTER);
+			gc.drawString(msg, lcdWidth/2, lcdHeight/2 + 10, Graphics.HCENTER | Graphics.VCENTER);
 			painter.run();
 		}
 	}
@@ -288,19 +374,23 @@ public class MobilePlatform
 	public void flushGraphics(Image img, int x, int y, int width, int height)
 	{
 		gc.drawImagePart(img, x, y, width, height);
-
-		painter.run();
-
-		//System.gc();
+		paintIfNeeded();
 	}
 
 	public void repaint(Image img, int x, int y, int width, int height)
 	{
 		gc.drawImagePart(img, x, y, width, height);
+		lastPlatformImage = (CanvasImage) img;
+		paintIfNeeded();
+	}
 
-		painter.run();
-
-		//System.gc();
+	private void paintIfNeeded()
+	{
+		long now = System.currentTimeMillis();
+		if (now - lastPaintMs >= 8) {
+			lastPaintMs = now;
+			painter.run();
+		}
 	}
 
 	/**

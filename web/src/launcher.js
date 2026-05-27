@@ -160,10 +160,10 @@ function fillGamesList(games) {
         item.className = "game-item";
 
         const link = document.createElement("a");
-        link.href = "run?app=" + game.appId;
+        link.href = "run.html?app=" + game.appId;
         link.addEventListener('pointerdown', e => {
             if (e.pointerType === 'touch') {
-                link.href = "run?app=" + game.appId + "&mobile=1";
+                link.href = "run.html?app=" + game.appId + "&mobile=1";
             }
         });
 

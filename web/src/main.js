@@ -29,6 +29,7 @@ let scaleSet = false;
 const keyRepeatManager = new KeyRepeatManager();
 
 window.evtQueue = evtQueue;
+const debugNet = !!(sp.get('netDebug') || sp.get('netdebug'));
 
 function autoscale() {
     if (!scaleSet) return;
@@ -96,7 +97,7 @@ function setListeners() {
                 autoscale();
             }
         } else if (codeMap[key]) {
-            console.log('queuin event');
+            // console.log('queuin event');
             evtQueue.queueEvent({
                 kind: kind === 'up' ? 'keyup' : 'keydown',
                 args: [codeMap[key], args.symbol, args.ctrlKey, args.shiftKey]
@@ -186,13 +187,11 @@ function setListeners() {
     });
 
     document.addEventListener('mousedown', e => {
-        console.log('refocus');
         setTimeout(() => display.focus(), 20);
         ;
     });
 
     display.addEventListener('blur', e => {
-        console.log('refocus');
         // it doesn't work without any timeout
         setTimeout(() => display.focus(), 10);
         ;
@@ -235,7 +234,8 @@ async function init() {
     document.getElementById("loading").textContent = "Loading CheerpJ...";
 
     display = document.getElementById('display');
-    screenCtx = display.getContext('2d');
+    screenCtx = display.getContext('2d', { desynchronized: true });
+    screenCtx.imageSmoothingEnabled = false;
 
     setListeners();
 
@@ -313,15 +313,139 @@ async function init() {
             async Java_pl_zb3_freej2me_bridge_shell_Shell_sayObject(lib, label, obj) {
                 debugger;
                 console.log('[sayobject]', label, obj);
+            },
+            async Java_pl_zb3_freej2me_bridge_shell_Shell_netSocketOpen(lib, url) {
+                if (debugNet) console.log('[net] open', url);
+                const ws = new WebSocket(url);
+                ws.binaryType = 'arraybuffer';
+                const handle = {
+                    ws,
+                    rx: [],
+                    rxLen: 0,
+                    closed: false,
+                    waiters: [],
+                    txLen: 0,
+                    lastLog: 0,
+                };
+
+                const wake = () => {
+                    if (handle.waiters.length) {
+                        const w = handle.waiters;
+                        handle.waiters = [];
+                        for (const r of w) r();
+                    }
+                };
+
+                ws.addEventListener('message', e => {
+                    if (e.data instanceof ArrayBuffer) {
+                        const u8 = new Uint8Array(e.data);
+                        if (u8.byteLength) {
+                            handle.rx.push(u8);
+                            handle.rxLen += u8.byteLength;
+                        }
+                    }
+                    if (debugNet) {
+                        const now = performance.now();
+                        if (now - handle.lastLog > 5000) {
+                            handle.lastLog = now;
+                            console.log('[net] rx', handle.rxLen, 'tx', handle.txLen);
+                        }
+                    }
+                    wake();
+                });
+                ws.addEventListener('close', () => {
+                    handle.closed = true;
+                    if (debugNet) console.log('[net] close');
+                    wake();
+                });
+                ws.addEventListener('error', () => {
+                    handle.closed = true;
+                    if (debugNet) console.log('[net] error');
+                    wake();
+                });
+
+                await new Promise((resolve, reject) => {
+                    ws.addEventListener('open', resolve, { once: true });
+                    ws.addEventListener('error', () => reject(new Error('ws open failed')), { once: true });
+                });
+
+                return handle;
+            },
+            async Java_pl_zb3_freej2me_bridge_shell_Shell_netSocketRead(lib, handle, buffer, offset, length) {
+                if (length <= 0) return 0;
+
+                while (!handle.closed && handle.rxLen === 0) {
+                    await new Promise(r => handle.waiters.push(r));
+                }
+
+                if (handle.rxLen === 0 && handle.closed) {
+                    return -1;
+                }
+
+                const out = new Uint8Array(buffer.buffer, buffer.byteOffset + offset, length);
+                let written = 0;
+
+                while (written < length && handle.rx.length) {
+                    const chunk = handle.rx[0];
+                    const take = Math.min(chunk.byteLength, length - written);
+                    out.set(chunk.subarray(0, take), written);
+                    written += take;
+                    if (take === chunk.byteLength) {
+                        handle.rx.shift();
+                    } else {
+                        handle.rx[0] = chunk.subarray(take);
+                    }
+                    handle.rxLen -= take;
+                }
+
+                return written;
+            },
+            async Java_pl_zb3_freej2me_bridge_shell_Shell_netSocketWrite(lib, handle, buffer, offset, length) {
+                if (length <= 0) return;
+                if (handle.closed) throw new Error('ws closed');
+                const u8 = new Uint8Array(buffer.buffer, buffer.byteOffset + offset, length);
+                handle.ws.send(u8);
+                handle.txLen += length;
+                if (debugNet) {
+                    const now = performance.now();
+                    if (now - handle.lastLog > 5000) {
+                        handle.lastLog = now;
+                        console.log('[net] rx', handle.rxLen, 'tx', handle.txLen);
+                    }
+                }
+            },
+            async Java_pl_zb3_freej2me_bridge_shell_Shell_netSocketClose(lib, handle) {
+                try {
+                    handle.closed = true;
+                    handle.ws.close();
+                } catch (e) {
+                }
             }
         }
     });
 
     document.getElementById("loading").textContent = "Loading...";
 
-    const lib = await cheerpjRunLibrary(cheerpjWebRoot+"/freej2me-web.jar");
+    let jarUrl = cheerpjWebRoot + "/freej2me-web.jar";
+    if (sp.get('nocache')) {
+        jarUrl += (jarUrl.includes('?') ? '&' : '?') + 'v=' + Date.now();
+    }
+    const lib = await cheerpjRunLibrary(jarUrl);
 
     const FreeJ2ME = await lib.org.recompile.freej2me.FreeJ2ME;
+
+    const socketProxy = sp.get('socketProxy') || sp.get('socketproxy');
+    const netDebug = sp.get('netDebug') || sp.get('netdebug');
+    if (socketProxy || netDebug) {
+        const System = await lib.java.lang.System;
+        if (socketProxy) {
+            await System.setProperty('freej2me.socketProxy', socketProxy);
+            console.log('[net] using socketProxy', socketProxy);
+        }
+        if (netDebug) {
+            await System.setProperty('freej2me.netDebug', 'true');
+        }
+    }
 
     let args;
 

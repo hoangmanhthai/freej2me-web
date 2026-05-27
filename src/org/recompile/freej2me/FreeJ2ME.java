@@ -134,7 +134,6 @@ public class FreeJ2ME {
 						}
 
 						if (limitFPS > 0) {
-							// this is of course a simplification
 							Thread.sleep(limitFPS);
 						}
 					}
